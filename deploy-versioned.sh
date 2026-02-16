@@ -27,9 +27,9 @@ docker push $ECR_URI:$COMMIT_HASH
 docker push $ECR_URI:latest
 
 echo "[4/5] Criando nova task definition..."
-TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY --region $REGION --query 'taskDefinition')
-NEW_TASK_DEF=$(echo $TASK_DEF | jq --arg img "$ECR_URI:$COMMIT_HASH" '.containerDefinitions[0].image=$img | del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy)')
-NEW_REVISION=$(echo $NEW_TASK_DEF | aws ecs register-task-definition --region $REGION --cli-input-json file:///dev/stdin --query 'taskDefinition.revision' --output text)
+TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY --region $REGION)
+echo $TASK_DEF | jq --arg img "$ECR_URI:$COMMIT_HASH" '.taskDefinition | .containerDefinitions[0].image=$img | {family,taskRoleArn,executionRoleArn,networkMode,containerDefinitions,volumes,placementConstraints,requiresCompatibilities,cpu,memory} | del(..|nulls)' > /tmp/new-task-def.json
+NEW_REVISION=$(aws ecs register-task-definition --region $REGION --cli-input-json file:///tmp/new-task-def.json --query 'taskDefinition.revision' --output text)
 
 echo "Nova Task Definition: $TASK_FAMILY:$NEW_REVISION"
 
