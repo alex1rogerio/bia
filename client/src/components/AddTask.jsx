@@ -59,7 +59,7 @@ const AddTask = ({ onAdd }) => {
       </div>
       
       <button type="submit" className="btn btn-block success">
-        Add new task again man
+        Adionar nova Tarefa meu Jovem
       </button>
       
       <Modal

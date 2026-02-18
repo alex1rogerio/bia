@@ -1,3 +1,3 @@
-url="http://bia-alb-1456632997.us-east-1.elb.amazonaws.com"
+url="https://formacao.bia-aws-controller.com.br"
 docker build -t check_disponibilidade -f Dockerfile_checkdisponibilidade .
 docker run --rm -ti -e URL=$url check_disponibilidade
